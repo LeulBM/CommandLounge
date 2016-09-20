@@ -2,10 +2,28 @@
 import json
 import requests
 import sys
+import keyinfo
 
-key = "FVRighYFcjsFtyvZPWipiTK6VAoGnaX3wLt2d2N7MEgPPeB9qC"
-basedata = {"token":{"id":key},}
+basedata = {"token":{"id":keyinfo.apikey},}
 head = {'Content-Type': 'application/json'}
+
+
+def main():
+    if len(sys.argv) < 3 or len(sys.argv) > 4:
+        usage()
+
+    if sys.argv[1]=="lights":
+        basedata['lights'] = dict()
+        lightcontrol(sys.argv, basedata)
+        encod = json.dumps(basedata)
+        r = requests.put('http://aforargroom.csh.rit.edu:5000/lounge/lights', data = encod, headers = head)
+    else:
+        usage()
+
+    if r.status_code == 200:
+        print("Success")
+    else:
+        print("Fail, status code %d" % r.status_code)
 
 
 def lightcontrol(args, basedata):
@@ -91,23 +109,6 @@ radiator
     ''')
     sys.exit()
 
-
-def main():
-    if len(sys.argv) < 3 or len(sys.argv) > 4:
-        usage()
-
-    if sys.argv[1]=="lights":
-        basedata['lights'] = dict()
-        lightcontrol(sys.argv, basedata)
-        encod = json.dumps(basedata)
-        r = requests.put('http://aforargroom.csh.rit.edu:5000/lounge/lights', data = encod, headers = head)
-    else:
-        usage()
-
-    if r.status_code == 200:
-        print("Success")
-    else:
-        print("Fail, status code %d" % r.status_code)
 
 
 if __name__ == "__main__" :
